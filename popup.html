@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tab Volume Dial</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="settings.js" defer></script>
+  <script src="popup.js" defer></script>
+  <script src="appearance.js" defer></script>
+</head>
+<body>
+<main>
+  <header>
+    <span class="sound" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+    <h1>Tab Volume Dial</h1>
+    <button type="button" id="appearance-button" disabled popovertarget="appearance" aria-label="Appearance" title="Appearance">
+      <span aria-hidden="true">⚙</span>
+    </button>
+    <div id="appearance" popover aria-label="Appearance">
+      <div class="appearance-heading">
+        <strong>Appearance</strong>
+        <button type="button" popovertarget="appearance" popovertargetaction="hide" aria-label="Close appearance">×</button>
+      </div>
+      <div class="reading">
+        <label for="theme">Theme</label>
+        <select id="theme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="system">Match system</option>
+        </select>
+      </div>
+      <fieldset class="accent-options">
+        <legend>Accent color</legend>
+        <div class="swatches">
+          <label class="swatch" data-color="mint" title="Mint"><input type="radio" name="accent" value="mint" aria-label="Mint" checked></label>
+          <label class="swatch" data-color="sky" title="Sky blue"><input type="radio" name="accent" value="sky" aria-label="Sky blue"></label>
+          <label class="swatch" data-color="violet" title="Violet"><input type="radio" name="accent" value="violet" aria-label="Violet"></label>
+          <label class="swatch" data-color="rose" title="Rose"><input type="radio" name="accent" value="rose" aria-label="Rose"></label>
+          <label class="swatch" data-color="amber" title="Amber"><input type="radio" name="accent" value="amber" aria-label="Amber"></label>
+          <label class="swatch" data-color="slate" title="Slate"><input type="radio" name="accent" value="slate" aria-label="Slate"></label>
+        </div>
+      </fieldset>
+      <button type="button" id="reset-appearance">Reset appearance</button>
+      <p id="appearance-status" class="hint" role="status"></p>
+    </div>
+    <button type="button" id="about-button" popovertarget="about" aria-label="About Tab Volume Dial" title="About Tab Volume Dial">
+      <span aria-hidden="true">ⓘ</span>
+    </button>
+    <div id="about" popover aria-label="About Tab Volume Dial">
+      <div class="appearance-heading">
+        <strong>About Tab Volume Dial</strong>
+        <button type="button" popovertarget="about" popovertargetaction="hide" aria-label="Close about">×</button>
+      </div>
+      <p class="hint">Created by Aimplify Solutions LLC.</p>
+      <a href="https://aimplifysolutions.com/" target="_blank" rel="noopener noreferrer">aimplifysolutions.com</a>
+    </div>
+  </header>
+  <fieldset id="controls" disabled>
+    <section aria-label="Volume controls">
+      <div class="reading">
+        <label for="volume">Current tab volume</label>
+        <div class="exact">
+          <input id="exact" type="number" min="0" max="1000" step="1" value="100" aria-label="Exact volume percentage">
+          <span aria-hidden="true">%</span>
+        </div>
+      </div>
+      <input id="volume" type="range" min="0" max="1000" step="1" value="100" aria-valuetext="100%">
+      <div class="scale">
+        <span aria-hidden="true">0%</span>
+        <div class="volume-steps" role="group" aria-label="Adjust volume">
+          <button type="button" data-step="-100" aria-label="Decrease by 100 percentage points">−100</button>
+          <button type="button" data-step="-10" aria-label="Decrease by 10 percentage points">−10</button>
+          <button type="button" data-step="10" aria-label="Increase by 10 percentage points">+10</button>
+          <button type="button" data-step="100" aria-label="Increase by 100 percentage points">+100</button>
+        </div>
+        <span aria-hidden="true">1000%</span>
+      </div>
+      <div class="presets">
+        <button type="button" data-volume="0">Mute</button>
+        <button type="button" id="reset">Reset</button>
+        <button type="button" data-volume="200">200%</button>
+        <button type="button" id="compare" disabled>Hear original</button>
+      </div>
+      <div class="meters">
+        <label for="input-meter">Input</label>
+        <meter id="input-meter" min="-60" max="0" value="-60" aria-valuetext="Inactive"></meter>
+        <label for="output-meter">Output</label>
+        <meter id="output-meter" min="-60" max="0" value="-60" aria-valuetext="Inactive"></meter>
+        <p id="meter-state" class="hint">Meters start when audio processing is active.</p>
+      </div>
+    </section>
+
+    <section aria-label="Sound mode">
+      <div class="reading">
+        <label for="mode">Sound mode</label>
+        <select id="mode">
+          <option value="standard">Standard</option>
+          <option value="speech">Speech</option>
+          <option value="night">Night</option>
+          <option value="music">Music</option>
+        </select>
+      </div>
+      <p id="mode-hint" class="hint"></p>
+    </section>
+
+    <div class="panel-actions">
+      <button type="button" popovertarget="equalizer">Equalizer &amp; stereo</button>
+      <button type="button" id="site-summary" popovertarget="site">Presets</button>
+    </div>
+
+    <div id="equalizer" class="tool-panel" popover aria-label="Equalizer and stereo">
+      <div class="appearance-heading">
+        <strong>Equalizer &amp; stereo</strong>
+        <button type="button" popovertarget="equalizer" popovertargetaction="hide" aria-label="Close equalizer">×</button>
+      </div>
+      <div class="adjustments">
+        <label for="bass">Bass</label>
+        <input id="bass" type="range" min="-12" max="12" value="0">
+        <output for="bass"></output>
+        <label for="lowMids">Low mids</label>
+        <input id="lowMids" type="range" min="-12" max="12" value="0">
+        <output for="lowMids"></output>
+        <label for="mids">Mids</label>
+        <input id="mids" type="range" min="-12" max="12" value="0">
+        <output for="mids"></output>
+        <label for="highMids">High mids</label>
+        <input id="highMids" type="range" min="-12" max="12" value="0">
+        <output for="highMids"></output>
+        <label for="treble">Treble</label>
+        <input id="treble" type="range" min="-12" max="12" value="0">
+        <output for="treble"></output>
+        <label for="balance">Balance</label>
+        <input id="balance" type="range" min="-100" max="100" value="0">
+        <output for="balance"></output>
+      </div>
+      <div class="reading leveler">
+        <label for="leveler">Leveler</label>
+        <select id="leveler" aria-describedby="leveler-hint">
+          <option value="off">Off</option>
+          <option value="gentle">Gentle</option>
+          <option value="strong">Strong</option>
+        </select>
+      </div>
+      <p id="leveler-hint" class="hint">Lift quieter passages and soften loud ones.</p>
+      <label class="mono"><input id="mono" type="checkbox"> Mono audio</label>
+    </div>
+
+    <div id="site" class="tool-panel" popover aria-label="Presets">
+      <div class="appearance-heading">
+        <strong>Presets</strong>
+        <button type="button" popovertarget="site" popovertargetaction="hide" aria-label="Close presets">×</button>
+      </div>
+      <div class="reading">
+        <label for="preset-scope">Save or apply for</label>
+        <select id="preset-scope">
+          <option value="site">This site</option>
+          <option value="global">All sites</option>
+        </select>
+      </div>
+      <p id="site-name" class="hint"></p>
+      <div class="presets">
+        <button type="button" id="save-site">Save current</button>
+        <button type="button" id="apply-site" disabled>Apply saved</button>
+        <button type="button" id="forget-site" disabled>Forget</button>
+      </div>
+    </div>
+  </fieldset>
+  <p id="status" role="status"></p>
+</main>
+</body>
+</html>
